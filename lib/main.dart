@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:ungmobile/states/authen.dart';
 import 'package:ungmobile/states/my_service.dart';
@@ -11,6 +13,7 @@ Map<String, WidgetBuilder> map = {
 String? firstState;
 
 void main() {
+  HttpOverrides.global = MyHttpOverrides();
   firstState = MyConstant.routeAuthen;
   runApp(const MyApp());
 }
@@ -21,9 +24,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       routes: map,
       initialRoute: firstState,
       title: MyConstant.appName,
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    // TODO: implement createHttpClient
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

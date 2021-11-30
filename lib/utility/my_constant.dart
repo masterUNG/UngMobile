@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class MyConstant {
   // field
+  static String domainAuthen = 'https://play.intouchcompany.com/MobileService2/api/ad/Authenticated';
+
   static String routeAuthen = '/authen';
   static String routeMyServie = '/myService';
 
@@ -24,14 +26,36 @@ class MyConstant {
   static String pathImage4hot = 'images/hot4.png';
   static String pathImage5hot = 'images/hot5.png';
 
+  static String pathImage1cool = 'images/cool1.png';
+  static String pathImage2cool = 'images/cool2.png';
+  static String pathImage3cool = 'images/cool3.png';
+  static String pathImage4cool = 'images/cool4.png';
+  static String pathImage5cool = 'images/cool5.png';
+
+  static String pathImage1gr = 'images/green1.png';
+  static String pathImage2gr = 'images/green2.png';
+  static String pathImage3gr = 'images/green3.png';
+  static String pathImage4gr = 'images/green4.png';
+  static String pathImage5gr = 'images/green5.png';
+
   static String appName = 'Ung Moble';
 
+  static List<Color> primarys = [primaryHot, primaryCool, primaryGreen];
+  static List<Color> lights = [lightHot, lightCool, lightGreen];
+  static List<Color> darts = [darkHot, darkCool, darkGreen];
+  static List<String> authenImages = [
+    pathImage1hot,
+    pathImage1cool,
+    pathImage1gr,
+  ];
+
   // method
-  BoxDecoration planBox() => BoxDecoration(
-        color: lightHot.withOpacity(0.3),
+  BoxDecoration planBox(int index) => BoxDecoration(
+        color: lights[index].withOpacity(0.3),
       );
 
-  BoxDecoration whiteBox() => BoxDecoration(borderRadius: BorderRadius.circular(20),
+  BoxDecoration whiteBox() => BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
         color: Colors.white.withOpacity(0.7),
       );
 
@@ -40,24 +64,24 @@ class MyConstant {
         primary: MyConstant.primaryHot,
       );
 
-  TextStyle h1Style() => GoogleFonts.prompt(
+  TextStyle h1Style(int index) => GoogleFonts.prompt(
           textStyle: TextStyle(
         fontSize: 30,
         fontWeight: FontWeight.bold,
-        color: darkHot,
+        color: darts[index],
       ));
 
-  TextStyle h2Style() => GoogleFonts.prompt(
+  TextStyle h2Style(int index) => GoogleFonts.prompt(
           textStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        color: darkHot,
+        color: darts[index],
       ));
 
-  TextStyle h3Style() => GoogleFonts.prompt(
+  TextStyle h3Style(int index) => GoogleFonts.prompt(
           textStyle: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.normal,
-        color: darkHot,
+        color: darts[index],
       ));
 }

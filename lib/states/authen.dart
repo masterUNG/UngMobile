@@ -1,6 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ungmobile/models/authen_model.dart';
 import 'package:ungmobile/utility/my_constant.dart';
+import 'package:ungmobile/utility/my_dialog.dart';
+import 'package:ungmobile/utility/my_setting.dart';
 import 'package:ungmobile/widgets/show_image.dart';
+import 'package:ungmobile/widgets/show_progress.dart';
 import 'package:ungmobile/widgets/show_title.dart';
 
 class Authen extends StatefulWidget {
@@ -12,32 +18,135 @@ class Authen extends StatefulWidget {
 
 class _AuthenState extends State<Authen> {
   bool redEye = true;
+  final formKey = GlobalKey<FormState>();
+  final drawKey = GlobalKey<ScaffoldState>();
+
+  int? index;
+
+  TextEditingController userController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    readIndex();
+  }
+
+  Future<void> readIndex() async {
+    await MySetting().findIndex().then((value) {
+      setState(() {
+        index = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) => GestureDetector(
-          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-          behavior: HitTestBehavior.opaque,
-          child: Container(
-            decoration: MyConstant().planBox(),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    newImage(constraints),
-                    newAppName(),
-                    newUser(constraints),
-                    newPassword(constraints),
-                    newLogin(constraints),
-                  ],
+      key: drawKey,
+      endDrawer: index == null ? const SizedBox() : newDrawer(context),
+      body: SafeArea(
+        child: index == null ? const ShowProgress() : newContent(),
+      ),
+    );
+  }
+
+  LayoutBuilder newContent() {
+    return LayoutBuilder(
+      builder: (context, constraints) => GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          decoration: MyConstant().planBox(index!),
+          child: Stack(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      drawKey.currentState!.openEndDrawer();
+                    },
+                    icon: Icon(
+                      Icons.settings,
+                      color: MyConstant.lightHot,
+                    ),
+                  ),
+                ],
+              ),
+              Center(
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        newImage(constraints),
+                        newAppName(),
+                        newUser(constraints),
+                        newPassword(constraints),
+                        newLogin(constraints),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Drawer newDrawer(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          UserAccountsDrawerHeader(accountName: null, accountEmail: null),
+          RadioListTile(
+            title: ShowTitle(
+              title: 'Hot Theme',
+              textStyle: MyConstant().h2Style(index!),
+              index: index!,
+            ),
+            value: 0,
+            groupValue: index,
+            onChanged: (value) {
+              Navigator.pop(context);
+              index = 0;
+              setupIndex();
+            },
+          ),
+          RadioListTile(
+            title: ShowTitle(
+              title: 'Cool Theme',
+              textStyle: MyConstant().h2Style(index!),
+              index: index!,
+            ),
+            value: 1,
+            groupValue: index,
+            onChanged: (value) {
+              Navigator.pop(context);
+              index = 1;
+              setupIndex();
+            },
+          ),
+          RadioListTile(
+            title: ShowTitle(
+              title: 'Green Theme',
+              textStyle: MyConstant().h2Style(index!),
+              index: index!,
+            ),
+            value: 2,
+            groupValue: index,
+            onChanged: (value) {
+              Navigator.pop(context);
+              index = 2;
+              setupIndex();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -48,7 +157,45 @@ class _AuthenState extends State<Authen> {
       width: constraints.maxWidth * 0.6,
       child: ElevatedButton(
         style: MyConstant().buttonStyle(),
-        onPressed: () {},
+        onPressed: () async {
+          if (formKey.currentState!.validate()) {
+            String user = userController.text;
+            String password = passwordController.text;
+            var endPassword = Uri.encodeComponent(password);
+            print('user = $user, password = $password');
+            MyDialog().progressDialog(context);
+            String path =
+                '${MyConstant.domainAuthen}?userName=$user&password=$endPassword';
+
+            print('path ==> $path');
+
+            await Dio().get(path).then((value) async {
+              print('value Authen ==> $value');
+              AuthenModel model = AuthenModel.fromMap(value.data);
+              print('IsAuthen ==>> ${model.isAuthenticate}');
+              if (model.isAuthenticate) {
+                Navigator.pop(context);
+                String token = model.token;
+                print('token ==>> $token');
+
+                List<String> strings = []; // [token, empid, user]
+                strings.add(token);
+                strings.add(user);
+                strings.add(user);
+
+                SharedPreferences preferences =
+                    await SharedPreferences.getInstance();
+                preferences.setStringList('userdata', strings).then((value) =>
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, MyConstant.routeMyServie, (route) => false));
+              } else {
+                Navigator.pop(context);
+                MyDialog().normalDialog(context, 'Authen False ?',
+                    model.processResult.message, index!);
+              }
+            });
+          }
+        },
         child: const Text('Login'),
       ),
     );
@@ -56,16 +203,28 @@ class _AuthenState extends State<Authen> {
 
   Container newUser(BoxConstraints constraints) {
     return Container(
-      decoration: MyConstant().whiteBox(),
+      // decoration: MyConstant().whiteBox(),
       margin: const EdgeInsets.only(top: 16),
       width: constraints.maxWidth * 0.6,
-      height: 50,
+      // height: 50,
       child: TextFormField(
-        style: MyConstant().h3Style(),
+        controller: userController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill User in Blank';
+          } else {
+            return null;
+          }
+        },
+        style: MyConstant().h3Style(index!),
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.7),
           contentPadding: const EdgeInsets.symmetric(vertical: 4),
-          label: const ShowTitle(title: 'User :'),
-         
+          label: ShowTitle(
+            title: 'User :',
+            index: index!,
+          ),
           prefixIcon: Icon(
             Icons.perm_identity,
             color: MyConstant.darkHot,
@@ -78,6 +237,10 @@ class _AuthenState extends State<Authen> {
             borderSide: BorderSide(color: MyConstant.lightHot),
             borderRadius: BorderRadius.circular(20),
           ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: MyConstant.lightHot),
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       ),
     );
@@ -85,13 +248,24 @@ class _AuthenState extends State<Authen> {
 
   Container newPassword(BoxConstraints constraints) {
     return Container(
-      decoration: MyConstant().whiteBox(),
+      // decoration: MyConstant().whiteBox(),
       margin: const EdgeInsets.only(top: 16),
       width: constraints.maxWidth * 0.6,
-      height: 50,
-      child: TextFormField(style: MyConstant().h2Style(),
+      // height: 50,
+      child: TextFormField(
+        controller: passwordController,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please Fill Password in Blank';
+          } else {
+            return null;
+          }
+        },
+        style: MyConstant().h2Style(index!),
         obscureText: redEye,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.7),
           suffixIcon: IconButton(
             onPressed: () {
               setState(() {
@@ -109,8 +283,10 @@ class _AuthenState extends State<Authen> {
                   ),
           ),
           contentPadding: const EdgeInsets.symmetric(vertical: 4),
-          label: const ShowTitle(title: 'Password :'),
-         
+          label: ShowTitle(
+            title: 'Password :',
+            index: index!,
+          ),
           prefixIcon: Icon(
             Icons.lock_outline,
             color: MyConstant.darkHot,
@@ -123,6 +299,10 @@ class _AuthenState extends State<Authen> {
             borderSide: BorderSide(color: MyConstant.lightHot),
             borderRadius: BorderRadius.circular(20),
           ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: MyConstant.lightHot),
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       ),
     );
@@ -130,13 +310,21 @@ class _AuthenState extends State<Authen> {
 
   ShowTitle newAppName() => ShowTitle(
         title: MyConstant.appName,
-        textStyle: MyConstant().h1Style(),
+        textStyle: MyConstant().h1Style(index!),
+        index: index!,
       );
 
   SizedBox newImage(BoxConstraints constraints) {
     return SizedBox(
       width: constraints.maxWidth * 0.6,
-      child: ShowImage(path: MyConstant.pathImage3hot),
+      child: ShowImage(path: MyConstant.authenImages[index!]),
     );
+  }
+
+  Future<void> setupIndex() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setInt('index', index!).then((value) {
+      setState(() {});
+    });
   }
 }
