@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ungmobile/states/authen.dart';
-import 'package:ungmobile/states/my_service.dart';
+import 'package:ungmobile/states/main_home.dart';
 import 'package:ungmobile/utility/my_constant.dart';
 
 Map<String, WidgetBuilder> map = {
   MyConstant.routeAuthen: (BuildContext context) => const Authen(),
-  MyConstant.routeMyServie: (BuildContext context) => const MyService(),
+  MyConstant.routeMainHome: (BuildContext context) => const MainHome(),
 };
 
 String? firstState;

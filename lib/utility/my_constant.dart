@@ -6,7 +6,7 @@ class MyConstant {
   static String domainAuthen = 'https://play.intouchcompany.com/MobileService2/api/ad/Authenticated';
 
   static String routeAuthen = '/authen';
-  static String routeMyServie = '/myService';
+  static String routeMainHome = '/mainHome';
 
   static Color primaryHot = const Color(0xffd85e00);
   static Color lightHot = const Color(0xffff8e3b);
@@ -48,6 +48,11 @@ class MyConstant {
     pathImage1cool,
     pathImage1gr,
   ];
+  static List<String> drawerImages = [
+    pathImage2hot,
+    pathImage2cool,
+    pathImage2gr,
+  ];
 
   // method
   BoxDecoration planBox(int index) => BoxDecoration(
@@ -83,5 +88,12 @@ class MyConstant {
         fontSize: 14,
         fontWeight: FontWeight.normal,
         color: darts[index],
+      ));
+
+      TextStyle h3WhiteStyle() => GoogleFonts.prompt(
+          textStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.normal,
+        color: Colors.white,
       ));
 }

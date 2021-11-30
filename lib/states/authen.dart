@@ -187,7 +187,7 @@ class _AuthenState extends State<Authen> {
                     await SharedPreferences.getInstance();
                 preferences.setStringList('userdata', strings).then((value) =>
                     Navigator.pushNamedAndRemoveUntil(
-                        context, MyConstant.routeMyServie, (route) => false));
+                        context, MyConstant.routeMainHome, (route) => false));
               } else {
                 Navigator.pop(context);
                 MyDialog().normalDialog(context, 'Authen False ?',
