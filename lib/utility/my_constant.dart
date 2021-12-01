@@ -3,7 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 class MyConstant {
   // field
-  static String domainAuthen = 'https://play.intouchcompany.com/MobileService2/api/ad/Authenticated';
+  static String domainAuthen =
+      'https://play.intouchcompany.com/MobileService2/api/ad/Authenticated';
+  static String apiGetMainIcon =
+      'https://play.intouchcompany.com/MobileService/workplaceApi/GetMainIcon?isIntra=true';
+  static String domainIcon = 'http://wp.intouchcompany.com';
 
   static String routeAuthen = '/authen';
   static String routeMainHome = '/mainHome';
@@ -90,7 +94,7 @@ class MyConstant {
         color: darts[index],
       ));
 
-      TextStyle h3WhiteStyle() => GoogleFonts.prompt(
+  TextStyle h3WhiteStyle() => GoogleFonts.prompt(
           textStyle: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.normal,

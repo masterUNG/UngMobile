@@ -21,15 +21,14 @@ class _MainHomeState extends State<MainHome> {
   int? index;
   ProfileModel? profileModel;
   int indexBody = 0;
-  List<Widget> widgets = [
-    const MainPage(),
-    const News(),
-  ];
+  List<Widget> widgets = [];
+  List<String> titles = ['Main Page', 'News',];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     findIndex();
     readProfile();
   }
@@ -64,6 +63,10 @@ class _MainHomeState extends State<MainHome> {
     await MySetting().findIndex().then((value) {
       setState(() {
         index = value;
+        widgets.add(MainPage(
+          index: index!,
+        ));
+        widgets.add(const News());
       });
     });
   }
@@ -121,35 +124,60 @@ class _MainHomeState extends State<MainHome> {
                     ),
                   ),
                   menuMainPage(context),
+                  menuNews(context),
                 ],
               ),
             ),
       appBar: index == null
           ? null
-          : AppBar(
+          : AppBar(title: Text(titles[indexBody]),
               backgroundColor: MyConstant.primarys[index!],
             ),
-      body: profileModel == null ? const ShowProgress() : widgets[indexBody],
+      body: index == null ? const ShowProgress() : widgets[indexBody],
     );
   }
 
   ListTile menuMainPage(BuildContext context) {
     return ListTile(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  leading: Icon(
-                    Icons.home_outlined,
-                    size: 36,
-                    color: MyConstant.darts[index!],
-                  ),
-                  title: ShowTitle(
-                    title: 'Main Page',
-                    index: index!,
-                    textStyle: MyConstant().h2Style(index!),
-                  ),
-                  subtitle:
-                      ShowTitle(title: 'Display Nav to App', index: index!),
-                );
+      onTap: () {
+        Navigator.pop(context);
+        setState(() {
+          indexBody = 0;
+        });
+      },
+      leading: Icon(
+        Icons.home_outlined,
+        size: 36,
+        color: MyConstant.darts[index!],
+      ),
+      title: ShowTitle(
+        title: 'Main Page',
+        index: index!,
+        textStyle: MyConstant().h2Style(index!),
+      ),
+      subtitle: ShowTitle(title: 'Display Nav to App', index: index!),
+    );
+  }
+
+  ListTile menuNews(BuildContext context) {
+    return ListTile(
+      onTap: () {
+        Navigator.pop(context);
+        setState(() {
+          indexBody = 1;
+        });
+      },
+      leading: Icon(
+        Icons.home_max,
+        size: 36,
+        color: MyConstant.darts[index!],
+      ),
+      title: ShowTitle(
+        title: 'New',
+        index: index!,
+        textStyle: MyConstant().h2Style(index!),
+      ),
+      subtitle: ShowTitle(title: 'Display New', index: index!),
+    );
   }
 }
