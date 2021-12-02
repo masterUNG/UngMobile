@@ -1,3 +1,4 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:ungmobile/bodys/main_page.dart';
@@ -22,7 +23,10 @@ class _MainHomeState extends State<MainHome> {
   ProfileModel? profileModel;
   int indexBody = 0;
   List<Widget> widgets = [];
-  List<String> titles = ['Main Page', 'News',];
+  List<String> titles = [
+    'Main Page',
+    'News',
+  ];
 
   @override
   void initState() {
@@ -74,66 +78,82 @@ class _MainHomeState extends State<MainHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: profileModel == null
-          ? const SizedBox()
-          : Drawer(
-              child: Column(
-                children: [
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        colors: [Colors.white, MyConstant.primarys[index!]],
-                        radius: 1,
-                      ),
-                    ),
-                    child: LayoutBuilder(
-                      builder: (context, constraints) => SizedBox(
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth * 0.35,
-                                  child: ShowImage(
-                                    path: MyConstant.drawerImages[index!],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Positioned(
-                              bottom: 15,
-                              child: ShowTitle(
-                                title: profileModel!.fullName,
-                                index: index!,
-                                textStyle: MyConstant().h2Style(index!),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              child: ShowTitle(
-                                title: profileModel!.email,
-                                index: index!,
-                                textStyle: MyConstant().h3WhiteStyle(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  menuMainPage(context),
-                  menuNews(context),
-                ],
-              ),
-            ),
+      drawer: profileModel == null ? const SizedBox() : newDrawer(context),
       appBar: index == null
           ? null
-          : AppBar(title: Text(titles[indexBody]),
+          : AppBar(
+              title: Text(titles[indexBody]),
               backgroundColor: MyConstant.primarys[index!],
             ),
-      body: index == null ? const ShowProgress() : widgets[indexBody],
+      body: index == null
+          ? const ShowProgress()
+          : newSwiper(0),
+    );
+  }
+
+  Swiper newSwiper(int indexStart) {
+    return Swiper(
+            index: indexStart,
+            loop: false,
+            itemCount: widgets.length,
+            itemBuilder: (context, index) {
+              return widgets[index];
+            },
+          );
+  }
+
+  Drawer newDrawer(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                colors: [Colors.white, MyConstant.primarys[index!]],
+                radius: 1,
+              ),
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) => SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: constraints.maxWidth * 0.35,
+                          child: ShowImage(
+                            path: MyConstant.drawerImages[index!],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Positioned(
+                      bottom: 15,
+                      child: ShowTitle(
+                        title: profileModel!.fullName,
+                        index: index!,
+                        textStyle: MyConstant().h2Style(index!),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      child: ShowTitle(
+                        title: profileModel!.email,
+                        index: index!,
+                        textStyle: MyConstant().h3WhiteStyle(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          menuMainPage(context),
+          menuNews(context),
+        ],
+      ),
     );
   }
 

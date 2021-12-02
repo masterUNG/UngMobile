@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ungmobile/models/authen_model.dart';
 import 'package:ungmobile/utility/my_constant.dart';
@@ -26,11 +28,74 @@ class _AuthenState extends State<Authen> {
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin =
+      FlutterLocalNotificationsPlugin();
+  InitializationSettings? initialiZationSettings;
+  AndroidInitializationSettings? androidInitializationSettings;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     readIndex();
+    setupMessaging();
+    setupLocalNoti();
+  }
+
+  Future<void> setupLocalNoti() async {
+    androidInitializationSettings =
+        const AndroidInitializationSettings('app_icon');
+    initialiZationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+    await flutterLocalNotificationPlugin.initialize(
+      initialiZationSettings!,
+      onSelectNotification: onSelectNoti,
+    );
+  }
+
+  Future<void> onSelectNoti(String? string) async {
+    if (string != null) {
+      print('## string onSelect => $string');
+    }
+  }
+
+  Future<void> setupMessaging() async {
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    String? token = await firebaseMessaging.getToken();
+    print('## token ==> $token');
+
+    //for fontEnd Service
+    FirebaseMessaging.onMessage.listen((event) {
+      String? title = event.notification!.title;
+      String? message = event.notification!.body;
+      print('## onMessage ==> title = $title, message = $message');
+      // MyDialog().normalDialog(context, title!, message!, index!);
+
+      processShowLocalNoti(title!, message!);
+    });
+
+    //for BackEnd Service
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      String? title = event.notification!.title;
+      String? message = event.notification!.body;
+      print('## onMessageOpenApp ==> title = $title, message = $message');
+    });
+  }
+
+  Future<void> processShowLocalNoti(String title, String message) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        const AndroidNotificationDetails(
+      'channelId',
+      'channelName',
+      priority: Priority.high,
+      importance: Importance.max,
+      ticker: 'test',
+    );
+
+    NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await flutterLocalNotificationPlugin.show(
+        0, title, message, notificationDetails);
   }
 
   Future<void> readIndex() async {

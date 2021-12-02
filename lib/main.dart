@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ungmobile/states/authen.dart';
 import 'package:ungmobile/states/main_home.dart';
@@ -12,10 +13,15 @@ Map<String, WidgetBuilder> map = {
 
 String? firstState;
 
-void main() {
-  HttpOverrides.global = MyHttpOverrides();
-  firstState = MyConstant.routeAuthen;
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp().then((value) {
+    HttpOverrides.global = MyHttpOverrides();
+    firstState = MyConstant.routeAuthen;
+    runApp(const MyApp());
+  }).catchError((value) {
+    print('error from firebase ==> ${value.message}');
+  });
 }
 
 class MyApp extends StatelessWidget {

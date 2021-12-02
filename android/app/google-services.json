@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "130199478645",
+    "project_id": "ungmobile-54bdb",
+    "storage_bucket": "ungmobile-54bdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130199478645:android:3cb730a9255beff096f33c",
+        "android_client_info": {
+          "package_name": "com.flutterthailand.ungmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130199478645-0stnr8972jih1vnlr35bo4liahf4m0kp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADwgaudlACKgTKMCfTxMIYikCpMSnRvmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130199478645-0stnr8972jih1vnlr35bo4liahf4m0kp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
