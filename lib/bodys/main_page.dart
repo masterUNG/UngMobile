@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:ungmobile/bodys/approve.dart';
 import 'package:ungmobile/bodys/personal.dart';
@@ -29,6 +30,18 @@ class _MainPageState extends State<MainPage> {
     Icons.filter_3,
   ];
 
+  List<Widget> iconWidgets = [
+    Icon(Icons.filter_1),
+    Icon(Icons.filter_2),
+    Badge(badgeContent: Text('3'), child: Icon(Icons.android),),
+  ];
+
+  //  List<IconData> iconDatas = [
+  //   Icons.filter_1,
+  //   Icons.filter_2,
+  //   Badge(badgeColor: Text('3'), child: Icon(Icons.android),),
+  // ];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -47,14 +60,12 @@ class _MainPageState extends State<MainPage> {
     for (var title in titles) {
       bottomNavigationBarItems.add(
         BottomNavigationBarItem(
-          icon: Icon(
-            iconDatas[i],
-          ),
+          icon: iconWidgets[i],
           label: title,
         ),
       );
 
-      i++;
+      i++;  
     }
   }
 

@@ -1,5 +1,7 @@
+import 'package:badges/badges.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,6 +34,7 @@ class _AuthenState extends State<Authen> {
       FlutterLocalNotificationsPlugin();
   InitializationSettings? initialiZationSettings;
   AndroidInitializationSettings? androidInitializationSettings;
+  IOSInitializationSettings? iosInitializationSettings;
 
   @override
   void initState() {
@@ -45,11 +48,33 @@ class _AuthenState extends State<Authen> {
   Future<void> setupLocalNoti() async {
     androidInitializationSettings =
         const AndroidInitializationSettings('app_icon');
-    initialiZationSettings =
-        InitializationSettings(android: androidInitializationSettings);
+
+    iosInitializationSettings = IOSInitializationSettings(
+        onDidReceiveLocalNotification: onDidReceiveLocalNoti);
+
+    initialiZationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: iosInitializationSettings,
+    );
+
     await flutterLocalNotificationPlugin.initialize(
       initialiZationSettings!,
       onSelectNotification: onSelectNoti,
+    );
+  }
+
+  Future onDidReceiveLocalNoti(
+      int id, String? title, String? body, String? payload) async {
+    return CupertinoAlertDialog(
+      title: Text(title!),
+      content: Text(body!),
+      actions: [
+        CupertinoDialogAction(
+          onPressed: () {},
+          isDefaultAction: true,
+          child: const Text('OK'),
+        ),
+      ],
     );
   }
 
@@ -92,8 +117,12 @@ class _AuthenState extends State<Authen> {
       ticker: 'test',
     );
 
-    NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iosNotificationDetails,
+    );
     await flutterLocalNotificationPlugin.show(
         0, title, message, notificationDetails);
   }
@@ -152,6 +181,10 @@ class _AuthenState extends State<Authen> {
                         newUser(constraints),
                         newPassword(constraints),
                         newLogin(constraints),
+                        Badge(
+                          badgeContent: Text('3'),
+                          child: Icon(Icons.android),
+                        ),
                       ],
                     ),
                   ),
