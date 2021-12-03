@@ -31,16 +31,13 @@ class _MainPageState extends State<MainPage> {
   ];
 
   List<Widget> iconWidgets = [
-    Icon(Icons.filter_1),
-    Icon(Icons.filter_2),
-    Badge(badgeContent: Text('3'), child: Icon(Icons.android),),
+    const Icon(Icons.filter_1),
+    const Icon(Icons.filter_2),
+    Badge(
+      badgeContent: const Text('3'),
+      child: const Icon(Icons.android),
+    ),
   ];
-
-  //  List<IconData> iconDatas = [
-  //   Icons.filter_1,
-  //   Icons.filter_2,
-  //   Badge(badgeColor: Text('3'), child: Icon(Icons.android),),
-  // ];
 
   @override
   void initState() {
@@ -65,7 +62,7 @@ class _MainPageState extends State<MainPage> {
         ),
       );
 
-      i++;  
+      i++;
     }
   }
 

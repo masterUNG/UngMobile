@@ -117,7 +117,7 @@ class _AuthenState extends State<Authen> {
       ticker: 'test',
     );
 
-    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails();
+    IOSNotificationDetails iosNotificationDetails = const IOSNotificationDetails();
 
     NotificationDetails notificationDetails = NotificationDetails(
       android: androidNotificationDetails,
@@ -182,8 +182,8 @@ class _AuthenState extends State<Authen> {
                         newPassword(constraints),
                         newLogin(constraints),
                         Badge(
-                          badgeContent: Text('3'),
-                          child: Icon(Icons.android),
+                          badgeContent: const Text('3'),
+                          child: const Icon(Icons.android),
                         ),
                       ],
                     ),
